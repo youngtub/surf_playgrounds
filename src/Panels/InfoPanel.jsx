@@ -82,7 +82,7 @@ const InfoPanel = (props) => {
         <br/>
         <img src='https://coconutgirlwireless.files.wordpress.com/2016/01/surf-icon.png' height={230} width={230}></img>
         <br/><br/>
-        <p style={{fontWeight: 'bold'}}>Welcome to Surf Playground</p>
+        <p style={{fontWeight: 'bold'}}>Welcome to Surf Playgrounds</p>
       </Col>
     ) : ''}
 
