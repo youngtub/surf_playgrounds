@@ -6,7 +6,8 @@ import Menu from './Sections/Menu.jsx';
 import {Grid, Row, Col} from 'react-bootstrap';
 import ScrollableAnchor from 'react-scrollable-anchor'
 import About from './Sections/About';
-import Contribute from './Sections/Contribute'
+import Contribute from './Sections/Contribute';
+import Editor from './Sections/Editor';
 
 class App extends Component {
   constructor(props) {
@@ -48,6 +49,12 @@ class App extends Component {
             <VizPanel settings={this.state.settingsObj}/>
           </Col>
 
+        </Row>
+        <br/><hr/><br/>
+        <Row style={{backgroundColor: '#d9d9db'}}>
+          <Col md={12}>
+            <Editor />
+          </Col>
         </Row>
 
 

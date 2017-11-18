@@ -4,7 +4,7 @@ import {Input, Icon, Button, Radio} from 'antd';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 
-class AddNode extends React.Component {
+class AddNodeTree extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -92,4 +92,4 @@ const addNodeStyle = {
   color: 'black'
 }
 
-export default AddNode;
+export default AddNodeTree;

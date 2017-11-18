@@ -32,8 +32,8 @@ const InfoPanel = (props) => {
 
       <Grid fluid={true}>
 
-    {props.display === 'node' ? (
-      <Row>
+    {props.display === 'node' && props.structure === 'scatter'? (
+      <Row style={textStyle}>
         <Col sm={12} md={12} style={centered}>
           <Row>
             <h2>{props.selectedNode.name}</h2>
@@ -42,14 +42,66 @@ const InfoPanel = (props) => {
             {/*<img src={props.selectedNode.thumbnail} height={150} width={160}/>*/}
           </Row>
           <Row>
-            {props.selectedNode.role}
+            Age: {props.selectedNode.age}
+          </Row>
+          <Row>
+            Height: {props.selectedNode.height}
+          </Row>
+          <Row>
+            Weight: {props.selectedNode.weight}
+          </Row>
+          <br/><hr/><br/>
+          <Row>
+            Click node to show links
           </Row>
         </Col>
       </Row>
   ) : ''}
 
-    {props.display === 'link' ? (
-        <Row className="show-grid">
+  {props.display === 'node' && props.structure === 'tree'? (
+    <Row style={textStyle}>
+      <Col sm={12} md={12} style={centered}>
+        <Row>
+          <h2>Node: {props.selectedNode.name}</h2>
+        </Row>
+        <Row>
+          {/*<img src={props.selectedNode.thumbnail} height={150} width={160}/>*/}
+        </Row>
+        {props.selectedNode.parent !== null ? (
+          <Row>
+            Parent: {props.selectedNode.parent.name}
+          </Row>
+        ) : ''}
+        <hr/>
+        <Row>
+          Children:
+        </Row>
+        <Row>
+          <Col md={2}></Col>
+          <Col md={8}>
+          <ListGroup>
+          {props.selectedNode.children.map((child, i) => (
+            <ListGroupItem key={i} style={initialPlaygroundStyle}>
+              {child.name}
+            </ListGroupItem>
+          ))}
+          </ListGroup>
+          </Col>
+          <Col md={2}></Col>
+        </Row>
+        <Row>
+          Weight: {props.selectedNode.likes}
+        </Row>
+        <br/><hr/><br/>
+        <Row>
+          Click node to show links
+        </Row>
+      </Col>
+    </Row>
+) : ''}
+
+    {props.display === 'link' && props.structure === 'scatter'? (
+        <Row className="show-grid" style={textStyle}>
           <Col sm={6} md={6} className='artist1' style={centered}>
             <Row>
               {props.selectedLink.source.name}
@@ -58,7 +110,13 @@ const InfoPanel = (props) => {
               <img src={props.selectedLink.source.thumbnail} height={150} width={160}/>
             </Row>*/}
             <Row>
-              {props.selectedLink.source.role}
+              Age: {props.selectedLink.source.age}
+            </Row>
+            <Row>
+              Height: {props.selectedLink.source.height}
+            </Row>
+            <Row>
+              Weight: {props.selectedLink.source.weight}
             </Row>
           </Col>
           <Col sm={6} md={6} className='artist2' style={centered}>
@@ -69,10 +127,39 @@ const InfoPanel = (props) => {
               <img src={props.selectedLink.target.thumbnail} height={150} width={160}/>
             </Row>*/}
             <Row>
-              {props.selectedLink.target.role}
+              Age: {props.selectedLink.target.age}
+            </Row>
+            <Row>
+              Height: {props.selectedLink.target.height}
+            </Row>
+            <Row>
+              Weight: {props.selectedLink.target.weight}
             </Row>
 
           </Col>
+
+          <Row>
+            Similarity: {Math.floor(props.selectedLink.value*100)}%
+          </Row>
+
+        </Row>
+    ) : ''}
+
+    {props.display === 'link' && props.structure === 'tree'? (
+        <Row className="show-grid" style={textStyle}>
+          <Col sm={6} md={6} className='artist1' style={centered}>
+            <Row>
+              Parent: {props.selectedLink.source.name}
+            </Row>
+          </Col>
+          <Col sm={6} md={6} className='artist2' style={centered}>
+            <Row>
+              Child: {props.selectedLink.target.name}
+            </Row>
+          </Col>
+          <Row>
+            Weight: {props.selectedLink.target.likes}
+          </Row>
 
         </Row>
     ) : ''}
@@ -81,8 +168,9 @@ const InfoPanel = (props) => {
       <Col md={12}>
         <br/>
         <img src='https://coconutgirlwireless.files.wordpress.com/2016/01/surf-icon.png' height={230} width={230}></img>
-        <br/><br/>
+        <br/>
         <p style={{fontWeight: 'bold'}}>Welcome to Surf Playgrounds</p>
+        <p style={initialPlaygroundStyle}>To begin, select a data structure below</p>
       </Col>
     ) : ''}
 
@@ -90,6 +178,14 @@ const InfoPanel = (props) => {
     </div>
   )
 };
+
+const initialPlaygroundStyle = {
+  fontSize: '14px'
+}
+
+const textStyle = {
+  fontSize: '18px'
+}
 
 const centered = {
   textAlign: "center",
