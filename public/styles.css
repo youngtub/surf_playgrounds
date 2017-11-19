@@ -64,7 +64,7 @@ body a {
 }
 
 #addNode {
-  height: 23vh;
+  height: 25vh;
   border: solid grey 1px;
   border-radius: 10px;
   background-color: rgba(142, 59, 92, 0.5);
@@ -72,7 +72,7 @@ body a {
 }
 
 #surchContainer {
-  height: 27vh;
+  height: 25vh;
   border: solid grey 1px;
   border-radius: 10px;
   background-color: rgba(111, 92, 130, 0.6);

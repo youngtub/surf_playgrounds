@@ -29,7 +29,8 @@ class VizPanel extends React.Component {
     this.applySurchCb = this.applySurchCb.bind(this);
     this.infoPanelCallback = this.infoPanelCallback.bind(this);
     this.resetSurchCb = this.resetSurchCb.bind(this);
-    this.addNodeCallback = this.addNodeCallback.bind(this);
+    this.addTreeNodeCallback = this.addTreeNodeCallback.bind(this);
+    this.addScatterNodeCallback = this.addScatterNodeCallback.bind(this);
     this.selectStructureCb = this.selectStructureCb.bind(this);
   }
 
@@ -264,7 +265,22 @@ var colors = {
     })
   };
 
-  addNodeCallback(name, role) {
+  addScatterNodeCallback(node) {
+    var newNode = {
+      name: node.name,
+      age: +node.age,
+      weight: +node.weight,
+      height: +node.height
+    };
+    var allNodes = this.state.nodesLibrary;
+    allNodes.push(newNode);
+    this.setState({
+      nodes: allNodes,
+      nodesLibrary: allNodes
+    }, this.dimensionalLinks)
+  }
+
+  addTreeNodeCallback(name, role) {
     console.log('name', name);
     console.log('role', role)
     var currentNodes = this.state.nodesLibrary;
@@ -434,11 +450,11 @@ var colors = {
 
               <Row>
                 { this.state.structure === 'tree' ? (
-                  <AddNodeTree addNodeCallback={this.addNodeCallback}/>
+                  <AddNodeTree addTreeNodeCallback={this.addTreeNodeCallback}/>
                 ) : ''}
 
                 { this.state.structure === 'scatter' ? (
-                  <AddNodeScatter addNodeCallback={this.addNodeCallback}/>
+                  <AddNodeScatter addScatterNodeCallback={this.addScatterNodeCallback}/>
                 ) : ''}
 
                 { this.state.structure === '' ? (

@@ -26,7 +26,7 @@ class AddNodeTree extends React.Component {
   }
 
   handleSubmit = () => {
-    this.props.addNodeCallback(this.state.val, this.state.role)
+    this.props.addTreeNodeCallback(this.state.val, this.state.role)
     this.setState({
       val: '',
       role: 'secondary'
