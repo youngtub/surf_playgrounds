@@ -41,10 +41,14 @@ class App extends Component {
     return (
       <div className="App">
         <ScrollableAnchor id={'main'}>
-        <header className="App-header">
-          <h2 className='Balmain'> Surf </h2>
-          {/*<h3>Playground</h3>*/}
-        </header>
+          <Row>
+            <Col md={1}>
+              <h2 className='Balmain'> Surf </h2>
+            </Col>
+            <Col md={1}>
+              <h2 style={movieHeaderStyle}> Playgrounds </h2>
+            </Col>
+          </Row>
       </ScrollableAnchor>
         <Grid fluid={true}>
 
@@ -61,8 +65,11 @@ class App extends Component {
         </Row>
         <br/><hr/><br/>
         <Row style={{backgroundColor: '#d9d9db'}}>
-          <Col md={12}>
+          <Col md={6}>
             <Editor JSONcode={this.state.currentNodes}/>
+          </Col>
+          <Col md={6}>
+            <About />
           </Col>
         </Row>
 
@@ -95,6 +102,13 @@ class App extends Component {
       </div>
     );
   }
+}
+
+const movieHeaderStyle = {
+  marginLeft: '40%',
+  marginTop: '20%',
+  fontFamily: 'Montserrat',
+  fontSize: '37px'
 }
 
 const surfStyle = {

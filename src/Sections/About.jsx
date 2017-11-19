@@ -7,16 +7,17 @@ const About = (props) => {
     <div style={centered}>
     <h3><u>About</u></h3>
     <br/>
-    <h5>InTheStudio is an interactive visualization of collaborations between rappers and producers</h5>
+    <h5>Surf Playgrounds exposes the essence of the platform with simple dummy data</h5>
     <br/>
-    {/*<p> You can approach it in 2 ways: </p>
-    <ul>
-      <li>By starting with all artists and narrowing down the scope (top-down) </li>
-      <li>Starting with one artist, and building it up from there (ground-up)</li>
-    </ul>*/}
-      <p>More data coming soon...</p><br/>
+    <p> Currently supports two types of data: </p>
+    <ul style={{textAlign: 'left'}}>
+      <li>-Hierarchical (tree) structures, where every node has a parent (except the root), and the potential to have children </li>
+      <li>-Dimensional, where every node has some properties, with which their similarity is computed </li>
+    </ul>
+    <br/>
+    <p>Once you select a data structure, you can add nodes and see for yourself how things work</p>
+      <br/>
       <p>Feel free to mess around with the Settings, and check out our proprietary <i>Surch</i>! It helps you to build up an aggregate search composed of multiple searches.</p>
-      <p>Click 'Demo' in the purple container above to try it out!</p>
       <br/>
       {/*<Row>
         <Col md={4}></Col>
@@ -29,11 +30,6 @@ const About = (props) => {
         <Col md={4}></Col>
       </Row>*/}
       <br/>
-     <p>Of course, there are far too many artists to display, so I've started off with some of my favourite current artists.
-       Please
-       <a href='#contribute'> add suggestions </a> of who should be included!
-     </p>
-
      <br/>
 
      </div>
