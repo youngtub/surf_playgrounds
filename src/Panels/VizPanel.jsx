@@ -311,6 +311,7 @@ var colors = {
       nodes: selectedNodes,
       nodesLibrary: selectedNodes
     }, () => {
+      this.props.passNodesInViz(this.state.nodes, this.state.structure)
       this.state.structure === 'scatter' ? this.dimensionalLinks() : this.treeLinks()
     })
   }

@@ -13,9 +13,12 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      settingsObj: {}
+      settingsObj: {},
+      currentNodes: [],
+      structure: ''
     }
     this.passStateInSettings = this.passStateInSettings.bind(this);
+    this.passNodesInViz = this.passNodesInViz.bind(this);
   }
 
   componentDidMount() {
@@ -25,6 +28,12 @@ class App extends Component {
   passStateInSettings(obj) {
     this.setState({
       settingsObj: obj
+    })
+  }
+
+  passNodesInViz(nodes) {
+    this.setState({
+      currentNodes: nodes
     })
   }
 
@@ -46,14 +55,14 @@ class App extends Component {
           </Col>
 
           <Col md={10}>
-            <VizPanel settings={this.state.settingsObj}/>
+            <VizPanel settings={this.state.settingsObj} passNodesInViz={this.passNodesInViz}/>
           </Col>
 
         </Row>
         <br/><hr/><br/>
         <Row style={{backgroundColor: '#d9d9db'}}>
           <Col md={12}>
-            <Editor />
+            <Editor JSONcode={this.state.currentNodes}/>
           </Col>
         </Row>
 

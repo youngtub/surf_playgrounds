@@ -215,7 +215,7 @@ class Settings extends React.Component {
 
         <br/><hr/><br/>
 
-          <Row>
+          {/*<Row>
             <Col md={2} style={settingTypeStyle}>
               <p> Node Colors: </p>
             </Col>
@@ -241,7 +241,7 @@ class Settings extends React.Component {
 
           </Row>
 
-          <br/><hr/><br/>
+          <br/><hr/><br/>*/}
 
             <Row>
               <Col md={2} style={settingTypeStyle}>
