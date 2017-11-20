@@ -5,6 +5,8 @@ import Surch from '../Surch/Surch';
 import SelectStructure from './Structures/SelectStructure';
 import AddNodeTree from './Structures/AddNodeTree';
 import AddNodeScatter from './Structures/AddNodeScatter';
+import ReplyToComment from '../Sections/ReplyToComment';
+import ReplyButton from '../Sections/ReplyButton';
 import {Grid, Row, Col} from 'react-bootstrap';
 import $ from 'jquery';
 import axios from 'axios';
@@ -23,7 +25,11 @@ class VizPanel extends React.Component {
       selectedLink: {},
       display: '',
       structure: '',
-      setTree: false
+      setTree: false,
+      showTooltip: false,
+      tooltipPosition: {},
+      likedComment: false,
+      infoType: 'panel'
     }
     this.generateCharts = this.generateCharts.bind(this);
     this.applySurchCb = this.applySurchCb.bind(this);
@@ -37,6 +43,10 @@ class VizPanel extends React.Component {
   componentWillReceiveProps() {
     // console.log('PROPS IN VIZPANEL', this.props.settings)
     window.clearInterval();
+    var info = this.props.settings.info || 'panel'
+    this.setState({
+      infoType: info
+    }, () => console.log('info type in viz', this.state.infoType))
     setTimeout(() => this.generateCharts(), 100)
   }
 
@@ -79,14 +89,14 @@ class VizPanel extends React.Component {
       )
 
     .force("center", d3.forceCenter(width/2, height/2))
-    .force("gravity", d3.forceManyBody().strength(-100))
+    .force("gravity", d3.forceManyBody().strength(70))
     .force('collision', d3.forceCollide().radius(function(d) {
       return circleSize
     }))
     .force("size", d3.forceManyBody([width, height]));
     // setInterval(this.linkDistanceMotion, 330)
     // setInterval(function(){sim.force.alpha(0.1);},250);
-
+    // d3.forceCenter([width/2, height/2])
     if (showMotion === 'true') {
       clearInterval(movement);
       var movement = setInterval(function(){
@@ -180,11 +190,13 @@ var colors = {
       // $(`.${artist.split(' ').join('')}`).css('display', 'inline');
       $('.link').css('display', 'none')
       $(`.${node.split(' ').join('')}.link`).toggle();
-
+      var position = that.getTooltipPosition(d)
       this.setState({
         selectedNode: d,
         display: 'node',
-        links: relatedLinks
+        links: relatedLinks,
+        showTooltip: true,
+        tooltipPosition: position
       }, () => {
         console.log('node in state', this.state.selectedNode)
         // this.generateCharts();
@@ -414,8 +426,8 @@ var colors = {
     console.log('NODES WITH CHILDREN OBJ', nodes);
     var links = nodes.reduce((acc, curr, ind) => {
       if (curr.children.length > 0) {
-        curr.children.forEach(child => {
-          let tempLinkObj = { source: curr.id, target: child.id, value: 1+child.likes/3 }
+        curr.children.forEach((child, i) => {
+          let tempLinkObj = { source: curr.id, target: child.id, value: (1+child.likes/3 || 1) }
           acc.push(tempLinkObj)
         })
       }
@@ -429,6 +441,53 @@ var colors = {
 
   }
 
+  replyToCommentCallback = (comment, reply, weight) => {
+    comment = comment || this.state.selectedNode;
+    let newId = this.state.nodesLibrary.length;
+    let newReplyObj = { id: newId, name: reply, level: comment.level+1, children: [], parent: comment.id , author: "User", likes: weight || 1, index: newId };
+    let updatedComments = this.state.nodesLibrary.slice()
+    updatedComments.push(newReplyObj);
+
+    let tempLinkObj = { source: comment, target: newReplyObj, value: 1 }
+    var newLinks = this.state.linksLibrary.slice();
+    newLinks.push(tempLinkObj);
+
+    this.setState({
+      nodes: updatedComments,
+      nodesLibrary: updatedComments,
+      links: newLinks,
+      linksLibrary: newLinks,
+      showCommentEntry: false,
+      showTooltip: false
+    }, this.generateCharts)
+  }
+
+  showReplyCallback = () => {
+    this.setState({
+      showTooltip: false,
+      showCommentEntry: true
+    })
+  };
+
+  handleCancel = () => {
+    this.setState({
+      showCommentEntry: false
+    })
+  };
+
+  getTooltipPosition = (d) => {
+    console.log('NODE TO GET POSITION OF', d)
+    var newLeft = (parseInt(d.x)-5).toString()+'px';
+    var newTop = (parseInt(d.y)).toString()+'px';
+    var outputObj = {
+      position: 'absolute',
+      left: newLeft,
+      top: newTop
+    }
+    console.log('OUTPUT OBJ', outputObj)
+    return outputObj;
+  };
+
   render() {
     return (
         <Grid fluid={true}>
@@ -441,16 +500,18 @@ var colors = {
 
             <Col md={3} style={border}>
 
-              <Row className="show-grid">
+              { this.state.infoType === 'panel' ? (
+                <Row className="show-grid">
                   <InfoPanel selectedNode={this.state.selectedNode} selectedLink={this.state.selectedLink}
                     display={this.state.display} nodes={this.state.nodes} links={this.state.linksLibrary}
-                    infoPanelCallback={this.infoPanelCallback} structure={this.state.structure}
+                    infoPanelCallback={this.infoPanelCallback} structure={this.state.structure} replyToCommentCallback={this.replyToCommentCallback}
                     />
-              </Row>
+                </Row>
+              ) : ''}
 
               <Row>
-                { this.state.structure === 'tree' ? (
-                  <AddNodeTree addTreeNodeCallback={this.addTreeNodeCallback}/>
+                {this.state.infoType === 'panel' && this.state.structure === 'tree' ? (
+                  <AddNodeTree replyToCommentCallback={this.replyToCommentCallback} selectedNode={this.state.selelctedNode} show={this.state.showTooltip}/>
                 ) : ''}
 
                 { this.state.structure === 'scatter' ? (
@@ -463,14 +524,21 @@ var colors = {
 
               </Row>
 
-              <Row className="show-grid">
+              {this.state.infoType === 'panel'  ? (
+                <Row className="show-grid">
                   <Surch allNodes={this.state.nodesLibrary} applySurchCb={this.applySurchCb} reset={this.resetSurchCb}/>
-              </Row>
+                </Row>
+              ) : ''}
 
             </Col>
 
           </Row>
-
+          {this.state.infoType === 'tooltip' && this.state.showTooltip ? (
+            <ReplyButton parent={this.state.selectedNode} style={this.state.tooltipPosition} showReplyCallback={this.showReplyCallback} likeCommentCallback={this.likeCommentCallback}/>
+          ) : ''}
+          {this.state.infoType === 'tooltip' && this.state.showCommentEntry ? (
+            <ReplyToComment parent={this.state.selectedNode} replyToCommentCallback={this.replyToCommentCallback} style={this.state.tooltipPosition} handleCancel={this.handleCancel}/>
+          ) : ''}
         </Grid>
     )
   }

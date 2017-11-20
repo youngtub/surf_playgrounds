@@ -2,7 +2,6 @@ import React from 'react';
 import {Col, Row, Grid, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {Button} from 'antd';
 
-
 const InfoPanel = (props) => {
 
   const calculateLinks = () => {

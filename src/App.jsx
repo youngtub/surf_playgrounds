@@ -66,7 +66,7 @@ class App extends Component {
         <br/><hr/><br/>
         <Row style={{backgroundColor: '#d9d9db'}}>
           <Col md={6}>
-            <Editor JSONcode={this.state.currentNodes}/>
+            <Editor />
           </Col>
           <Col md={6}>
             <About />

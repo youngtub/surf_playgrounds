@@ -9,13 +9,13 @@ class AddNodeTree extends React.Component {
     super(props);
     this.state = {
       val: '',
-      role: 'secondary'
+      weight: 1
     }
   }
 
-  handleChange = (e) => {
+  handleChange = (e, name) => {
     this.setState({
-      val: e.target.value
+      [name]: e.target.value
     })
   }
 
@@ -26,7 +26,8 @@ class AddNodeTree extends React.Component {
   }
 
   handleSubmit = () => {
-    this.props.addTreeNodeCallback(this.state.val, this.state.role)
+    // this.props.addTreeNodeCallback(this.state.val, this.state.role)
+    this.props.replyToCommentCallback(this.props.selectedNode, this.state.val, this.state.weight)
     this.setState({
       val: '',
       role: 'secondary'
@@ -43,36 +44,48 @@ class AddNodeTree extends React.Component {
               <br/>
             </Row>
 
-            <Row>
+            { this.props.show ? (
+              <Row>
+              <Row>
 
-              <Col md={2}></Col>
-              <Col md={7} style={inputField}>
-                <Input
-                  placeholder='new node name'
-                  onChange={this.handleChange}
-                  value={this.state.val}
-                  />
-              </Col>
-              <Col md={2}></Col>
+                <Col md={2}></Col>
+                <Col md={7} style={inputField}>
+                  <Input
+                    placeholder='new node name'
+                    onChange={(e) => this.handleChange(e, 'val')}
+                    value={this.state.val}
+                    />
+                </Col>
+                <Col md={2}></Col>
 
-            </Row>
+              </Row>
 
-            <br/>
+              <br/>
 
-            <Row>
-              <Col md={2}></Col>
-              <Col md={8}>
-                <RadioGroup onChange={this.toggleRole} value={this.state.role}>
-                  <RadioButton value="secondary">Secondary</RadioButton>
-                  <RadioButton value="primary">Primary</RadioButton>
-                </RadioGroup>
-              </Col>
-              <Col md={2}></Col>
-            </Row>
-            <br/>
-            <Row style={submitButton}>
+              <Row>
+                <Col md={2}></Col>
+                <Col md={7} style={inputField}>
+                  <Input
+                    placeholder='weight'
+                    onChange={(e) => this.handleChange(e, 'weight')}
+                    value={this.state.weight}
+                    />
+                </Col>
+                <Col md={2}></Col>
+
+              </Row>
+
+              <br/>
+              <Row style={submitButton}>
                 <Button icon='plus-circle' onClick={this.handleSubmit}>Submit</Button>
-            </Row>
+              </Row>
+              </Row>
+            ) : (
+              <Row>
+                Select a node to attach to!
+              </Row>
+            )
+          }
 
       </Grid>
     )

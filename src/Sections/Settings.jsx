@@ -27,7 +27,8 @@ class Settings extends React.Component {
       showTopBg: false,
       topBg: '#eff0f2',
       showBottomBg: false,
-      bottomBg: '#044191'
+      bottomBg: '#044191',
+      info: 'tooltip'
     }
     this.hideLinks = this.hideLinks.bind(this);
     this.showLinks = this.showLinks.bind(this);
@@ -69,8 +70,7 @@ class Settings extends React.Component {
   }
 
   handleChange(val, name) {
-    console.log('Name', name)
-    console.log('val', val)
+
     this.setState({
       [name]: val
     }, () => {
@@ -269,6 +269,20 @@ class Settings extends React.Component {
 
             <br/><hr/><br/>
 
+              <Row>
+                <Col md={2} style={settingTypeStyle}>
+                  <p>Info </p>
+                </Col>
+
+                <Col md={8}>
+                  <RadioGroup onChange={(e) => this.handleChange(e.target.value, 'info')} value={this.state.info}>
+                    <RadioButton value="tooltip">Panel</RadioButton>
+                    <RadioButton value="panel">Tooltip</RadioButton>
+                  </RadioGroup>
+                </Col>
+                <Col md={2}></Col>
+              </Row>
+              <br/><hr/><br/>
           <Row>
             <Col md={4}></Col>
             <Col md={4}>
