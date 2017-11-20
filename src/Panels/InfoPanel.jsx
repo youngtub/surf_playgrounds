@@ -31,7 +31,7 @@ const InfoPanel = (props) => {
 
       <Grid fluid={true}>
 
-    {props.display === 'node' && props.structure === 'scatter'? (
+    {props.display === 'node' && props.structure === 'collection'? (
       <Row style={textStyle}>
         <Col sm={12} md={12} style={centered}>
           <Row>
@@ -99,7 +99,7 @@ const InfoPanel = (props) => {
     </Row>
 ) : ''}
 
-    {props.display === 'link' && props.structure === 'scatter'? (
+    {props.display === 'link' && props.structure === 'collection'? (
         <Row className="show-grid" style={textStyle}>
           <Col sm={6} md={6} className='artist1' style={centered}>
             <Row>

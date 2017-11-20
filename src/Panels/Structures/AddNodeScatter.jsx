@@ -22,7 +22,7 @@ class AddNodeScatter extends React.Component {
   }
 
   handleSubmit = () => {
-    this.props.addScatterNodeCallback(this.state)
+    this.props.addcollectionNodeCallback(this.state)
     this.setState({
       name: '',
       age: '',

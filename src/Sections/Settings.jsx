@@ -28,7 +28,7 @@ class Settings extends React.Component {
       topBg: '#eff0f2',
       showBottomBg: false,
       bottomBg: '#044191',
-      info: 'tooltip'
+      info: 'panel'
     }
     this.hideLinks = this.hideLinks.bind(this);
     this.showLinks = this.showLinks.bind(this);

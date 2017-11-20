@@ -15,7 +15,7 @@ class App extends Component {
     this.state = {
       settingsObj: {},
       currentNodes: [],
-      structure: ''
+      structure: '',
     }
     this.passStateInSettings = this.passStateInSettings.bind(this);
     this.passNodesInViz = this.passNodesInViz.bind(this);
@@ -34,7 +34,7 @@ class App extends Component {
   passNodesInViz(nodes) {
     this.setState({
       currentNodes: nodes
-    })
+    }, () => console.log('nodes in app: ', this.state.currentNodes))
   }
 
   render() {
@@ -55,7 +55,7 @@ class App extends Component {
 
         <Row>
           <Col md={2}>
-            <Menu passStateInSettings={this.passStateInSettings}/>
+            <Menu passStateInSettings={this.passStateInSettings}/>/div>}
           </Col>
 
           <Col md={10}>
@@ -66,7 +66,7 @@ class App extends Component {
         <br/><hr/><br/>
         <Row style={{backgroundColor: '#d9d9db'}}>
           <Col md={6}>
-            <Editor />
+            <Editor JSONcode={this.state.currentNodes}/>
           </Col>
           <Col md={6}>
             <About />

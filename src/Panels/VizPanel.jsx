@@ -2,6 +2,7 @@ import React from 'react';
 import * as d3 from 'd3';
 import InfoPanel from './InfoPanel';
 import Surch from '../Surch/Surch';
+import InitialSelect from './InitialSelect'
 import SelectStructure from './Structures/SelectStructure';
 import AddNodeTree from './Structures/AddNodeTree';
 import AddNodeScatter from './Structures/AddNodeScatter';
@@ -29,15 +30,24 @@ class VizPanel extends React.Component {
       showTooltip: false,
       tooltipPosition: {},
       likedComment: false,
-      infoType: 'panel'
+      infoType: 'panel',
+      initial: true
     }
     this.generateCharts = this.generateCharts.bind(this);
     this.applySurchCb = this.applySurchCb.bind(this);
     this.infoPanelCallback = this.infoPanelCallback.bind(this);
     this.resetSurchCb = this.resetSurchCb.bind(this);
     this.addTreeNodeCallback = this.addTreeNodeCallback.bind(this);
-    this.addScatterNodeCallback = this.addScatterNodeCallback.bind(this);
+    this.addcollectionNodeCallback = this.addcollectionNodeCallback.bind(this);
     this.selectStructureCb = this.selectStructureCb.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({
+      nodes: initialNodes.nodes,
+      nodesLibrary: initialNodes.nodes,
+      structure: 'collection'
+    }, this.dimensionalLinks)
   }
 
   componentWillReceiveProps() {
@@ -77,9 +87,12 @@ class VizPanel extends React.Component {
 
     .force("link", d3.forceLink(this.state.linksLibrary)
       .distance( (d) => {
-        if (this.state.structure === 'scatter') {
-          linkDistance*=1.05;
-          return d.value > 0 ? linkDistance/(d.value+1): linkDistance;
+        if (this.state.structure === 'collection') {
+          if (this.state.initial) return 350
+          else {
+            linkDistance*=1.05;
+            return d.value > 0 ? linkDistance/(d.value+1): linkDistance;
+          }
         }
         if (this.state.structure === 'tree') {
           // linkDistance = 250;
@@ -88,8 +101,8 @@ class VizPanel extends React.Component {
       })
       )
 
-    .force("center", d3.forceCenter(width/2, height/2))
-    .force("gravity", d3.forceManyBody().strength(70))
+    .force("center", d3.forceCenter(width/2 + 60, height/2 + 20))
+    .force("gravity", d3.forceManyBody().strength(-50))
     .force('collision', d3.forceCollide().radius(function(d) {
       return circleSize
     }))
@@ -167,13 +180,14 @@ var colors = {
 }
 
   node.append("circle")
-      .attr("r", d => d.parent === null ? circleSize*2 : circleSize)
+      .attr("r", d => d.parent === null ? circleSize*2 : this.state.initial ? circleSize*1.5 : circleSize)
       .attr("fill", d => d.level ? colors[d.level] : colors[Math.floor(Math.random()*6)] )
       .attr("class", (d) => `${d.name} node`)
       .style("box-shadow", "10px 10px 5px #888888")
 
   node.append("text")
-      .attr("dx", -3).attr("dy", ".70em")
+      .attr("dx", -14)
+      .attr("dy", ".70em")
       .text(function(d) { return d.name })
       .style("font-size", "14px")
       .style("fill", "#e0e0e0")
@@ -181,26 +195,30 @@ var colors = {
 
 
     node.on('click', d => {
-      let node = d.name;
-      var relatedLinks = this.state.linksLibrary.filter(link => {
-        // console.log('LINK', link)
-        return link.source.name === node || link.target.name === node;
-      })
+      if (this.state.initial) {
+          this.selectStructureCb(d.name.toLowerCase())
+      } else {
+        let node = d.name;
+        var relatedLinks = this.state.linksLibrary.filter(link => {
+          // console.log('LINK', link)
+          return link.source.name === node || link.target.name === node;
+        })
 
-      // $(`.${artist.split(' ').join('')}`).css('display', 'inline');
-      $('.link').css('display', 'none')
-      $(`.${node.split(' ').join('')}.link`).toggle();
-      var position = that.getTooltipPosition(d)
-      this.setState({
-        selectedNode: d,
-        display: 'node',
-        links: relatedLinks,
-        showTooltip: true,
-        tooltipPosition: position
-      }, () => {
-        console.log('node in state', this.state.selectedNode)
-        // this.generateCharts();
-      })
+        // $(`.${artist.split(' ').join('')}`).css('display', 'inline');
+        $('.link').css('display', 'none')
+        $(`.${node.split(' ').join('')}.link`).toggle();
+        var position = that.getTooltipPosition(d)
+        this.setState({
+          selectedNode: d,
+          display: 'node',
+          links: relatedLinks,
+          showTooltip: true,
+          tooltipPosition: position
+        }, () => {
+          console.log('node in state', this.state.selectedNode)
+          // this.generateCharts();
+        })
+      }
     })
     .on('mouseover', (d) => {
       this.setState({
@@ -277,7 +295,7 @@ var colors = {
     })
   };
 
-  addScatterNodeCallback(node) {
+  addcollectionNodeCallback(node) {
     var newNode = {
       name: node.name,
       age: +node.age,
@@ -332,15 +350,23 @@ var colors = {
 
   selectStructureCb(val) {
     console.log('VAL', val)
-    var selectedNodes; val === 'tree' ? selectedNodes = JSONtree.nodes : selectedNodes = JSONscatter.nodes;
+    var mapping = {
+      'tree': JSONtree.nodes,
+      'collection': JSONcollection.nodes,
+      'custom': JSONcustom.nodes
+    }
+    var selectedNodes = mapping[val]
     console.log('selected nodes', selectedNodes)
     this.setState({
       structure: val,
       nodes: selectedNodes,
-      nodesLibrary: selectedNodes
+      nodesLibrary: selectedNodes,
+      initial: false,
+      selectedNode: selectedNodes[0]
     }, () => {
-      this.props.passNodesInViz(this.state.nodes, this.state.structure)
-      this.state.structure === 'scatter' ? this.dimensionalLinks() : this.treeLinks()
+      console.log('structure selected', this.state)
+      this.props.passNodesInViz(selectedNodes)
+      this.state.structure === 'collection' ? this.dimensionalLinks() : this.state.structure === 'custom' ? null :this.treeLinks();
     })
   }
 
@@ -397,12 +423,15 @@ var colors = {
     this.setState({
       links: links,
       linksLibrary: links
-    }, this.generateCharts)
-
+    }, () => {
+      this.generateCharts()
+      this.props.passNodesInViz(this.state.nodes)
+    })
   }
 
   treeLinks = () => {
     var originalNodes = this.state.nodes.slice();
+    this.props.passNodesInViz(originalNodes)
     var nodesNames = originalNodes.reduce((acc, curr) => {acc.push(curr.id); return acc;}, [])
     var nodes = originalNodes.reduce((acc, curr) => {
       if (curr.children.length > 0) {
@@ -437,8 +466,9 @@ var colors = {
     this.setState({
       links: links,
       linksLibrary: links
-    }, this.generateCharts)
-
+    }, () => {
+      this.generateCharts()
+    })
   }
 
   replyToCommentCallback = (comment, reply, weight) => {
@@ -495,12 +525,14 @@ var colors = {
           <Row>
 
             <Col md={9} className="show-grid">
-              <div id='canvas' style={border}></div>
+              <div id='canvas' style={border}>
+                {this.state.initial ? <InitialSelect /> : ''}
+              </div>
             </Col>
 
             <Col md={3} style={border}>
 
-              { this.state.infoType === 'panel' ? (
+              { this.state.infoType === 'panel' && !this.state.initial ? (
                 <Row className="show-grid">
                   <InfoPanel selectedNode={this.state.selectedNode} selectedLink={this.state.selectedLink}
                     display={this.state.display} nodes={this.state.nodes} links={this.state.linksLibrary}
@@ -510,21 +542,21 @@ var colors = {
               ) : ''}
 
               <Row>
-                {this.state.infoType === 'panel' && this.state.structure === 'tree' ? (
+                {this.state.infoType === 'panel' && this.state.structure === 'tree' && !this.state.initial ? (
                   <AddNodeTree replyToCommentCallback={this.replyToCommentCallback} selectedNode={this.state.selelctedNode} show={this.state.showTooltip}/>
                 ) : ''}
 
-                { this.state.structure === 'scatter' ? (
-                  <AddNodeScatter addScatterNodeCallback={this.addScatterNodeCallback}/>
+                { (this.state.structure === 'collection' || this.state.structure === 'custom') && !this.state.initial ? (
+                  <AddNodeScatter addcollectionNodeCallback={this.addcollectionNodeCallback}/>
                 ) : ''}
 
-                { this.state.structure === '' ? (
+                {/* this.state.structure === '' ? (
                   <SelectStructure selectStructureCb={this.selectStructureCb}/>
-                ) : ''}
+                ) : '' */}
 
               </Row>
 
-              {this.state.infoType === 'panel'  ? (
+              {this.state.infoType === 'panel' && !this.state.initial ? (
                 <Row className="show-grid">
                   <Surch allNodes={this.state.nodesLibrary} applySurchCb={this.applySurchCb} reset={this.resetSurchCb}/>
                 </Row>
@@ -549,6 +581,15 @@ const border = {
   // border: 'solid black 1px'
 }
 
+const initialNodes = {
+  "nodes": [
+    { "name": "Collection", "height": 100, "weight": 50, "age": 22 },
+    { "name": "Tree", "height": 100, "weight": 50, "age": 22 },
+    { "name": "Custom", "height": 103, "weight": 57, "age": 22 }
+  ],
+  "type": "collection"
+}
+
 const JSONtree = {
   "nodes": [
   { id: 0, name: 'A', level: 0, children: [1, 2, 3], parent: null, likes: 2, author: 'BeagleBob7', url: "http://www.animalgenetics.us/images/canine/Beagle4.jpg"},
@@ -564,15 +605,22 @@ const JSONtree = {
   "type":"tree"
 }
 
-const JSONscatter = {
+const JSONcollection = {
   "nodes": [
-    { "name": "A", "height": 160, "weight": 50, "age": 23 },
-    { "name": "B", "height": 180, "weight": 70, "age": 31 },
-    { "name": "C", "height": 163, "weight": 47, "age": 25 },
-    { "name": "D", "height": 175, "weight": 80, "age": 40 },
-    { "name": "E", "height": 170, "weight": 67, "age": 35 }
+    { "name": "Alice", "height": 160, "weight": 50, "age": 23 },
+    { "name": "Bob", "height": 180, "weight": 70, "age": 31 },
+    { "name": "Carnot", "height": 163, "weight": 47, "age": 25 },
+    { "name": "Dev", "height": 175, "weight": 80, "age": 40 },
+    { "name": "Euler", "height": 170, "weight": 67, "age": 35 }
   ],
-  "type": "scatter"
+  "type": "collection"
+}
+
+const JSONcustom = {
+  "nodes": [
+    { "name": "A1", "height": 160, "weight": 50, "age": 23 },
+  ],
+  "type": "collection"
 }
 
 
